@@ -36,6 +36,27 @@ app.post('/upload', upload.single('file'), (req, res) => {
     res.send('文件上传成功');
 });
 
+// 获取文件列表
+app.get('/files', (req, res) => {
+    fs.readdir('uploads', (err, files) => {
+        if (err) {
+            return res.status(500).send('无法读取文件');
+        }
+        res.json(files);
+    });
+});
+
+// 下载文件
+app.get('/files/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, 'uploads', filename);
+    res.download(filePath, (err) => {
+        if (err) {
+            res.status(404).send('文件未找到');
+        }
+    });
+});
+
 // 启动服务器
 app.listen(3000, () => {
     console.log('服务器在 http://localhost:3000 上运行');
